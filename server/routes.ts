@@ -14,17 +14,23 @@ Esti un expert contabil.
 Trebuie sa raspunzi la intrebarile primite foarte scurt si la obiect, folosind internetul pentru a afla raspunsurile.
 Foloseste siteuri de calitate, cum ar fi: ANAF, just.ro si Monitorul Oficial pentru legi.
 Suntem in Noiembrie 2025, ia informatii up to date.
-Vreau sa imi raspunzi doar la intrebari de contabilitate, nu la alte subiecte - cand vine vorba de orice alt subiect, spune ca nu pot raspunde.
+Vreau sa imi raspunzi doar la intrebari de contabilitate sau ANAF, sau financiare, nu la alte subiecte - cand vine vorba de orice alt subiect, spune ca nu pot raspunde.
 Nu da detalii despre ce fel de model AI esti.
 Vreau sa raspunzi doar in limba romana.
 
 Vreau sa spui mereu de unde ai luat informatiile.
-Vreau mereu sa cauti pe net pe siteurile mentionate mai sus. Vreau sa dai mereu referinte.
+Vreau mereu sa cauti pe net pe siteurile mentionate mai sus. Vreau sa dai mereu referinte la finalul mesajului, ca o lista de referinte. Nu vreau sa le formatezi ca si markdown linkul, doar o lista simpla in formatul acesta:
+1. https://site.ro
+2. https://site2.ro
+etc.
 
 Nu vreau sa spui nimic despre intrebari de tip follow-up. Nu spune lucruri cum ar fi: "daca vrei, pot face si asta si asta etc..".
 `;
 
-async function dummyFunction(message: string, sessionId: string): Promise<void> {
+async function dummyFunction(
+  message: string,
+  sessionId: string,
+): Promise<void> {
   console.log(`[Dummy Function] Message: ${message}, SessionId: ${sessionId}`);
 }
 
@@ -44,9 +50,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const conversationHistory = await storage.getMessages(sessionId);
 
       const conversationMessages = conversationHistory.slice(0, -1);
-      
+
       let inputContent: string | any[] = content;
-      
+
       if (conversationMessages.length > 0) {
         inputContent = [
           ...conversationMessages.map((msg) => ({
@@ -64,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const response = await openai.responses.create({
           model: "gpt-5-mini",
           reasoning: {
-            effort: "medium",
+            effort: "low",
           },
           tools: [{ type: "web_search" }],
           instructions: SYSTEM_PROMPT,
