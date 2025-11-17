@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getSessionId } from "@/lib/session";
 import { type Message } from "@shared/schema";
 import EmptyState from "@/components/EmptyState";
 import ChatThread from "@/components/ChatThread";
@@ -8,9 +9,19 @@ import ChatInput from "@/components/ChatInput";
 
 export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const sessionId = getSessionId();
 
   const { data: storedMessages } = useQuery<Message[]>({
-    queryKey: ["/api/messages"],
+    queryKey: ["/api/messages", sessionId],
+    queryFn: async () => {
+      const res = await fetch(`/api/messages?sessionId=${sessionId}`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to fetch messages: ${res.status}`);
+      }
+      return await res.json();
+    },
   });
 
   useEffect(() => {
@@ -21,12 +32,12 @@ export default function Chat() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      const res = await apiRequest("POST", "/api/chat", { content, role: "user" });
+      const res = await apiRequest("POST", "/api/chat", { content, role: "user", sessionId });
       return await res.json() as { userMessage: Message; aiMessage: Message };
     },
     onSuccess: (data) => {
       setMessages((prev) => [...prev, data.userMessage, data.aiMessage]);
-      queryClient.invalidateQueries({ queryKey: ["/api/messages"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/messages", sessionId] });
     },
   });
 

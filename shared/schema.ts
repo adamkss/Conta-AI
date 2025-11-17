@@ -5,12 +5,14 @@ import { sql } from "drizzle-orm";
 
 export const messages = pgTable("messages", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sessionId: text("session_id").notNull(),
   role: text("role").notNull(),
   content: text("content").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
 export const insertMessageSchema = createInsertSchema(messages).pick({
+  sessionId: true,
   role: true,
   content: true,
 });

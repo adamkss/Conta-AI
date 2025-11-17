@@ -6,7 +6,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   createMessage(message: InsertMessage): Promise<Message>;
-  getMessages(): Promise<Message[]>;
+  getMessages(sessionId: string): Promise<Message[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -46,8 +46,8 @@ export class MemStorage implements IStorage {
     return message;
   }
 
-  async getMessages(): Promise<Message[]> {
-    return this.messages;
+  async getMessages(sessionId: string): Promise<Message[]> {
+    return this.messages.filter((message) => message.sessionId === sessionId);
   }
 }
 
