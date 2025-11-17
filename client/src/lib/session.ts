@@ -18,3 +18,8 @@ export function getSessionId(): string {
 export function clearSessionId(): void {
   localStorage.removeItem(SESSION_ID_KEY);
 }
+
+export function resetSession(): string {
+  clearSessionId();
+  return getSessionId();
+}

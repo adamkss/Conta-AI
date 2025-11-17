@@ -17,7 +17,7 @@ export default function LoadingIndicator() {
               style={{ animationDelay: "300ms", animationDuration: "1s" }}
             />
           </div>
-          <span className="text-sm text-muted-foreground">Thinking...</span>
+          <span className="text-sm text-muted-foreground">Gândesc...</span>
         </div>
       </div>
     </div>

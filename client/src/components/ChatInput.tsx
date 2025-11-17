@@ -33,7 +33,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything"
+            placeholder="Intreabă-mă despre contabilitate sau financiar."
             className="resize-none pr-14 min-h-[56px] max-h-32 rounded-2xl border-input focus-visible:ring-2 focus-visible:ring-ring w-full"
             disabled={disabled}
             data-testid="input-message"

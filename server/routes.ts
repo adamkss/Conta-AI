@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         const aiContent =
           response.output_text ||
-          "I apologize, but I couldn't generate a response.";
+          "Imi pare rau, nu am putut raspunde la intrebarea ta.";
 
         const aiMessage = await storage.createMessage({
           sessionId,
@@ -91,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (apiError: any) {
         console.error("OpenAI API Error:", apiError);
 
-        const fallbackContent = `I apologize, but I encountered an error while processing your request. This is likely because the API key is not configured. Error: ${apiError.message}`;
+        const fallbackContent = `Imi pare rau. Eroare: ${apiError.message}`;
 
         const aiMessage = await storage.createMessage({
           sessionId,
