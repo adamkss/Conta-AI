@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertMessageSchema } from "@shared/schema";
@@ -7,6 +7,26 @@ import OpenAI from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "mock",
 });
+
+// Simple in-memory session store
+const authenticatedSessions = new Set<string>();
+
+function generateSessionToken(): string {
+  return `auth_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+}
+
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  const authToken = req.headers.authorization?.replace("Bearer ", "") || 
+                    req.body?.authToken || 
+                    req.query?.authToken as string;
+
+  if (!authToken || !authenticatedSessions.has(authToken)) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  next();
+}
 
 const SYSTEM_PROMPT = `
 Română:
@@ -61,7 +81,31 @@ async function dummyFunction(
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  app.post("/api/chat", async (req, res) => {
+  app.post("/api/auth/validate", async (req, res) => {
+    try {
+      const { password } = req.body;
+      const correctPassword = process.env.APP_PASSWORD;
+
+      if (!correctPassword) {
+        console.error("APP_PASSWORD environment variable is not set");
+        res.status(500).json({ error: "Server configuration error" });
+        return;
+      }
+
+      if (password === correctPassword) {
+        const authToken = generateSessionToken();
+        authenticatedSessions.add(authToken);
+        res.json({ valid: true, authToken });
+      } else {
+        res.status(401).json({ valid: false });
+      }
+    } catch (error) {
+      console.error("Password validation error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/chat", requireAuth, async (req, res) => {
     try {
       const { content, sessionId } = insertMessageSchema.parse(req.body);
 
@@ -133,7 +177,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/messages", async (req, res) => {
+  app.get("/api/messages", requireAuth, async (req, res) => {
     const sessionId = req.query.sessionId as string;
     if (!sessionId) {
       res.status(400).json({ error: "sessionId is required" });

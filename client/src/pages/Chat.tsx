@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getSessionId, resetSession } from "@/lib/session";
+import { getAuthToken, clearAuthentication } from "@/lib/auth";
 import { type Message } from "@shared/schema";
 import EmptyState from "@/components/EmptyState";
 import ChatThread from "@/components/ChatThread";
@@ -18,10 +19,18 @@ export default function Chat() {
   const { data: storedMessages } = useQuery<Message[]>({
     queryKey: ["/api/messages", sessionId],
     queryFn: async () => {
-      const res = await fetch(`/api/messages?sessionId=${sessionId}`, {
+      const authToken = getAuthToken();
+      const res = await fetch(`/api/messages?sessionId=${sessionId}&authToken=${encodeURIComponent(authToken || "")}`, {
         credentials: "include",
+        headers: {
+          Authorization: `Bearer ${authToken || ""}`,
+        },
       });
       if (!res.ok) {
+        if (res.status === 401) {
+          clearAuthentication();
+          window.location.reload();
+        }
         throw new Error(`Failed to fetch messages: ${res.status}`);
       }
       return await res.json();
@@ -40,10 +49,14 @@ export default function Chat() {
       const timeout = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
 
       try {
+        const authToken = getAuthToken();
         const res = await fetch("/api/chat", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content, role: "user", sessionId }),
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken || ""}`,
+          },
+          body: JSON.stringify({ content, role: "user", sessionId, authToken }),
           credentials: "include",
           signal: controller.signal,
         });
@@ -51,6 +64,11 @@ export default function Chat() {
         clearTimeout(timeout);
 
         if (!res.ok) {
+          if (res.status === 401) {
+            clearAuthentication();
+            window.location.reload();
+            return;
+          }
           const text = (await res.text()) || res.statusText;
           throw new Error(`${res.status}: ${text}`);
         }
