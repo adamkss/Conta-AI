@@ -47,6 +47,11 @@ Preferred communication style: Simple, everyday language.
 - Persists across page refreshes within the same browser
 - Used for user identification without requiring login credentials
 - Each session maintains isolated conversation history
+- Reset functionality: "Resetare" button in lower left clears current session and creates new one
+  - Clears all messages from current conversation
+  - Generates new session ID
+  - Previous session remains in storage but is no longer accessible
+  - Enables starting fresh conversations without losing old data
 
 **Message UX Flow**
 - Immediate feedback: User's message appears on the right side instantly when sent
