@@ -36,8 +36,17 @@ Preferred communication style: Simple, everyday language.
 - TanStack Query manages server state and API calls
 - React hooks (`useState`, `useEffect`) handle local component state
 - Message state is managed at the Chat page level and passed down to child components
-- Messages are loaded from storage on mount using `useQuery`
+- Messages are loaded from storage on mount using `useQuery` with session-scoped filtering
 - Cache invalidation ensures messages persist across page refreshes
+- Session ID is generated on first visit and stored in localStorage for user identification
+
+**Session Management**
+- Unique session ID generated automatically on first visit using `client/src/lib/session.ts`
+- Session ID format: `session_${timestamp}_${randomString}`
+- Stored in localStorage with key `chat_session_id`
+- Persists across page refreshes within the same browser
+- Used for user identification without requiring login credentials
+- Each session maintains isolated conversation history
 
 **Styling System**
 - Tailwind CSS with custom configuration and design tokens
@@ -58,17 +67,32 @@ Preferred communication style: Simple, everyday language.
 
 **API Structure**
 - RESTful API endpoints under `/api` prefix
-- `POST /api/chat` - Accepts user messages and calls OpenAI Responses API with web search
-- `GET /api/messages` - Retrieves message history from storage
+- `POST /api/chat` - Accepts user messages with sessionId and calls OpenAI Responses API with web search
+  - Includes sessionId in request body for user identification
+  - Calls dummy function with message and sessionId (placeholder for future processing)
+  - Retrieves conversation history for the session from storage
+  - Passes full conversation history to OpenAI for context-aware responses
+- `GET /api/messages` - Retrieves message history from storage filtered by sessionId
+  - Requires sessionId as query parameter
+  - Returns only messages for the specified session
 - Integrated with OpenAI's gpt-5-mini model with reasoning enabled (medium effort)
 - Web search tool enabled for accessing up-to-date information
 - System prompt configured for helpful AI assistant behavior
 - Fallback error handling when API key is not configured
 
+**Conversation Memory**
+- Conversation history is maintained per session
+- All past messages for a session are included in OpenAI API calls
+- OpenAI Responses API input parameter accepts array of message objects for context
+- Format: `[{ role: "user", content: "..." }, { role: "assistant", content: "..." }]`
+- Enables multi-turn conversations with full context awareness
+
 **Data Storage Pattern**
 - Abstract `IStorage` interface defines data access methods
 - `MemStorage` class provides in-memory implementation for development
-- Storage layer supports users and messages
+- Storage layer supports users and messages with session-based filtering
+- Messages are filtered by sessionId to ensure session isolation
+- `getMessages(sessionId)` returns only messages for the specified session
 - Designed for easy migration to database-backed storage using Drizzle ORM
 
 **Request/Response Handling**
@@ -85,6 +109,7 @@ Preferred communication style: Simple, everyday language.
 
 **Messages Table**
 - `id`: UUID primary key (auto-generated)
+- `sessionId`: Text field for session identification (required)
 - `role`: Text field for message role (user/assistant)
 - `content`: Text field for message content
 - `timestamp`: Timestamp with auto-default to current time
