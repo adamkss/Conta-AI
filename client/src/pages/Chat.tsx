@@ -113,7 +113,7 @@ export default function Chat() {
         <ChatThread messages={messages} isLoading={false} />
       )}
       <ChatInput onSend={handleSend} disabled={sendMessageMutation.isPending} />
-      <div className="fixed bottom-4 left-4">
+      <div className="fixed top-4 left-4">
         <Button
           onClick={handleReset}
           variant="outline"

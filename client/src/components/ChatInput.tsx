@@ -44,6 +44,9 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             size="icon"
             className="absolute right-3 rounded-full"
             data-testid="button-send"
+            style={{
+              marginLeft: "-40px",
+            }}
           >
             <Send className="h-4 w-4" />
           </Button>
