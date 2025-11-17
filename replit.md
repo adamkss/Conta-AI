@@ -48,6 +48,15 @@ Preferred communication style: Simple, everyday language.
 - Used for user identification without requiring login credentials
 - Each session maintains isolated conversation history
 
+**Message UX Flow**
+- Immediate feedback: User's message appears on the right side instantly when sent
+- Loading state: A placeholder message with "Loading..." text appears on the left with a pulsing animation
+- Response replacement: When the AI responds, the loading placeholder is replaced with the actual response
+- Temporary messages use IDs prefixed with `temp-` and are filtered out when real messages arrive from backend
+- Input is disabled during pending requests to prevent concurrent submissions
+- Long timeout (5 minutes) configured to accommodate reasoning and web search operations
+- Error handling removes temporary messages if request fails
+
 **Styling System**
 - Tailwind CSS with custom configuration and design tokens
 - HSL-based color system with CSS custom properties for theming
