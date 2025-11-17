@@ -28,13 +28,13 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t border-border">
       <div className="max-w-3xl mx-auto px-4 py-4">
-        <div className="relative">
+        <div className="relative flex items-center">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask anything"
-            className="resize-none pr-12 min-h-[56px] max-h-32 rounded-2xl border-input focus-visible:ring-2 focus-visible:ring-ring"
+            className="resize-none pr-14 min-h-[56px] max-h-32 rounded-2xl border-input focus-visible:ring-2 focus-visible:ring-ring w-full"
             disabled={disabled}
             data-testid="input-message"
           />
@@ -42,7 +42,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             onClick={handleSubmit}
             disabled={!input.trim() || disabled}
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full"
+            className="absolute right-3 rounded-full"
             data-testid="button-send"
           >
             <Send className="h-4 w-4" />
