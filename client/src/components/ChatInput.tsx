@@ -42,7 +42,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             onClick={handleSubmit}
             disabled={!input.trim() || disabled}
             size="icon"
-            className="absolute right-2 bottom-2 rounded-full"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full"
             data-testid="button-send"
           >
             <Send className="h-4 w-4" />
