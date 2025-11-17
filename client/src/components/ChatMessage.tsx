@@ -1,11 +1,14 @@
 import { type Message } from "@shared/schema";
 
+type MessageWithLoading = Message & { isLoading?: boolean };
+
 interface ChatMessageProps {
-  message: Message;
+  message: MessageWithLoading;
 }
 
 export default function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
+  const isLoading = message.isLoading;
 
   return (
     <div
@@ -17,7 +20,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           isUser
             ? "bg-muted text-foreground ml-auto"
             : "bg-card text-card-foreground"
-        }`}
+        } ${isLoading ? "animate-pulse" : ""}`}
       >
         <p className="text-base whitespace-pre-wrap break-words" data-testid="text-message-content">
           {message.content}

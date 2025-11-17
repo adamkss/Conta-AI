@@ -7,8 +7,10 @@ import EmptyState from "@/components/EmptyState";
 import ChatThread from "@/components/ChatThread";
 import ChatInput from "@/components/ChatInput";
 
+type MessageWithLoading = Message & { isLoading?: boolean };
+
 export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<MessageWithLoading[]>([]);
   const sessionId = getSessionId();
 
   const { data: storedMessages } = useQuery<Message[]>({
@@ -32,25 +34,71 @@ export default function Chat() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      const res = await apiRequest("POST", "/api/chat", { content, role: "user", sessionId });
-      return await res.json() as { userMessage: Message; aiMessage: Message };
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
+      
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content, role: "user", sessionId }),
+          credentials: "include",
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeout);
+        
+        if (!res.ok) {
+          const text = (await res.text()) || res.statusText;
+          throw new Error(`${res.status}: ${text}`);
+        }
+        
+        return await res.json() as { userMessage: Message; aiMessage: Message };
+      } catch (error) {
+        clearTimeout(timeout);
+        throw error;
+      }
     },
     onSuccess: (data) => {
-      setMessages((prev) => [...prev, data.userMessage, data.aiMessage]);
+      setMessages((prev) => {
+        const withoutTemp = prev.filter(m => !m.id.startsWith('temp-'));
+        return [...withoutTemp, data.userMessage, data.aiMessage];
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/messages", sessionId] });
+    },
+    onError: () => {
+      setMessages((prev) => prev.filter(m => !m.id.startsWith('temp-')));
     },
   });
 
   const handleSend = (content: string) => {
+    const userMessage: MessageWithLoading = {
+      id: `temp-user-${Date.now()}`,
+      sessionId,
+      role: "user",
+      content,
+      timestamp: new Date(),
+    };
+    
+    const loadingMessage: MessageWithLoading = {
+      id: `temp-loading-${Date.now()}`,
+      sessionId,
+      role: "assistant",
+      content: "Loading...",
+      timestamp: new Date(),
+      isLoading: true,
+    };
+    
+    setMessages((prev) => [...prev, userMessage, loadingMessage]);
     sendMessageMutation.mutate(content);
   };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {messages.length === 0 && !sendMessageMutation.isPending ? (
+      {messages.length === 0 ? (
         <EmptyState />
       ) : (
-        <ChatThread messages={messages} isLoading={sendMessageMutation.isPending} />
+        <ChatThread messages={messages} isLoading={false} />
       )}
       <ChatInput onSend={handleSend} disabled={sendMessageMutation.isPending} />
     </div>
