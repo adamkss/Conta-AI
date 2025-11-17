@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a minimalist AI chat application featuring a dark-themed interface inspired by modern chat platforms like ChatGPT and Claude. The application provides a clean, conversation-centric user experience with an empty state that transitions to a message thread as users interact with the AI.
+This is a minimalist AI chat application featuring a light-themed interface inspired by modern chat platforms like ChatGPT and Claude. The application provides a clean, conversation-centric user experience with an empty state that transitions to a message thread as users interact with the AI. The chat integrates with OpenAI's GPT-5 mini model with web search capabilities and reasoning enabled.
 
 The stack consists of:
 - **Frontend**: React with TypeScript, Vite for build tooling
@@ -22,9 +22,10 @@ Preferred communication style: Simple, everyday language.
 
 **Component Structure**
 - The application follows a component-based architecture using React functional components with TypeScript
-- Custom chat components (`ChatInput`, `ChatMessage`, `ChatThread`, `EmptyState`) handle the core chat functionality
+- Custom chat components (`ChatInput`, `ChatMessage`, `ChatThread`, `EmptyState`, `LoadingIndicator`) handle the core chat functionality
 - Components are organized in a feature-based structure under `client/src/components/`
 - shadcn/ui provides a comprehensive set of pre-built UI primitives (40+ components) that can be composed together
+- LoadingIndicator shows animated dots and "Thinking..." text while waiting for AI responses
 
 **Routing**
 - Uses Wouter for client-side routing (lightweight alternative to React Router)
@@ -33,16 +34,19 @@ Preferred communication style: Simple, everyday language.
 
 **State Management**
 - TanStack Query manages server state and API calls
-- React hooks (`useState`) handle local component state
+- React hooks (`useState`, `useEffect`) handle local component state
 - Message state is managed at the Chat page level and passed down to child components
+- Messages are loaded from storage on mount using `useQuery`
+- Cache invalidation ensures messages persist across page refreshes
 
 **Styling System**
 - Tailwind CSS with custom configuration and design tokens
 - HSL-based color system with CSS custom properties for theming
-- Dark theme foundation with high-contrast text for readability
+- Light theme with high-contrast text for readability
 - Custom spacing units (2, 3, 4, 6, 8, 12, 16) for consistent rhythm
 - Inter font family from Google Fonts for typography
 - Design guidelines documented in `design_guidelines.md` emphasizing minimalism and progressive disclosure
+- Send button positioned inside text input on right side, vertically centered
 
 ### Backend Architecture
 
@@ -54,9 +58,12 @@ Preferred communication style: Simple, everyday language.
 
 **API Structure**
 - RESTful API endpoints under `/api` prefix
-- `POST /api/chat` - Accepts user messages and returns mock AI responses
-- `GET /api/messages` - Retrieves message history
-- Currently returns mock AI responses; designed to integrate with real AI services in production
+- `POST /api/chat` - Accepts user messages and calls OpenAI Responses API with web search
+- `GET /api/messages` - Retrieves message history from storage
+- Integrated with OpenAI's gpt-5-mini model with reasoning enabled (medium effort)
+- Web search tool enabled for accessing up-to-date information
+- System prompt configured for helpful AI assistant behavior
+- Fallback error handling when API key is not configured
 
 **Data Storage Pattern**
 - Abstract `IStorage` interface defines data access methods
@@ -133,6 +140,7 @@ Preferred communication style: Simple, everyday language.
 - Lucide React for icon system
 - vaul for drawer components
 - input-otp for OTP input functionality
+- OpenAI SDK for AI integration with Responses API
 
 **Replit Integration**
 - Custom Vite plugins for Replit development environment
