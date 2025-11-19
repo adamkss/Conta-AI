@@ -73,6 +73,96 @@ Răspunsului trebuie să fie întotdeauna in ordinea aceasta:
 2. Lista de referințe
 `;
 
+const ALLOWED_REFERENCE_DOMAINS = [
+  "anaf.ro",
+  "mfinante.gov.ro",
+  "just.ro",
+  "monitoruloficial.ro",
+  "ceccar.ro",
+];
+
+function verifyReferences(content: string): void {
+  const urlRegex = /https?:\/\/[^\s]+/g;
+  const matches = content.match(urlRegex);
+  if (!matches) {
+    return;
+  }
+
+  const invalidHosts = matches
+    .map((url) => {
+      try {
+        return new URL(url).hostname.toLowerCase();
+      } catch {
+        return undefined;
+      }
+    })
+    .filter((hostname): hostname is string => Boolean(hostname))
+    .filter((hostname) => {
+      return !ALLOWED_REFERENCE_DOMAINS.some((domain) => {
+        return (
+          hostname === domain ||
+          hostname.endsWith(`.${domain}`)
+        );
+      });
+    });
+
+  if (invalidHosts.length > 0) {
+    const uniqueInvalidHosts = Array.from(new Set(invalidHosts));
+    console.warn(
+      `[ReferenceCheck] Unauthorized reference hosts detected: ${uniqueInvalidHosts.join(
+        ", ",
+      )}`,
+    );
+  }
+}
+
+const TOKEN_PRICING = {
+  INPUT: 0.25 / 1_000_000,
+  CACHED_INPUT: 0.025 / 1_000_000,
+  OUTPUT: 2 / 1_000_000,
+  WEB_SEARCH_CALL: 10 / 1_000,
+};
+
+function logUsageAndCost(response: any): void {
+  const usage = response.usage;
+  if (!usage) {
+    return;
+  }
+
+  const inputTokens = usage.input_tokens ?? 0;
+  const cachedTokens =
+    usage.input_tokens_details?.cached_tokens &&
+    usage.input_tokens_details.cached_tokens > 0
+      ? usage.input_tokens_details.cached_tokens
+      : 0;
+  const billedInputTokens = Math.max(inputTokens - cachedTokens, 0);
+  const outputTokens = usage.output_tokens ?? 0;
+
+  const inputCost = billedInputTokens * TOKEN_PRICING.INPUT;
+  const cachedCost = cachedTokens * TOKEN_PRICING.CACHED_INPUT;
+  const outputCost = outputTokens * TOKEN_PRICING.OUTPUT;
+
+  const outputItems = Array.isArray(response.output) ? response.output : [];
+  const webSearchCalls = outputItems.filter(
+    (item: any) => item?.type === "web_search_call",
+  ).length;
+  const toolCost = webSearchCalls * TOKEN_PRICING.WEB_SEARCH_CALL;
+
+  const totalCost = inputCost + cachedCost + outputCost + toolCost;
+
+  console.log(
+    `[OpenAI Usage] input=${inputTokens} (cached=${cachedTokens}) output=${outputTokens} total=${usage.total_tokens}`,
+  );
+
+  console.log(
+    `[OpenAI Cost] input=$${inputCost.toFixed(6)} cached=$${cachedCost.toFixed(
+      6,
+    )} output=$${outputCost.toFixed(6)} tools=$${toolCost.toFixed(
+      6,
+    )} (web_search_calls=${webSearchCalls}) total=$${totalCost.toFixed(6)}`,
+  );
+}
+
 async function dummyFunction(
   message: string,
   sessionId: string,
@@ -147,6 +237,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           input: inputContent,
         });
 
+        logUsageAndCost(response);
+
         const aiContent =
           response.output_text ||
           "Imi pare rau, nu am putut raspunde la intrebarea ta.";
@@ -156,6 +248,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: "assistant",
           content: aiContent,
         });
+
+        verifyReferences(aiContent);
 
         res.json({ userMessage, aiMessage });
       } catch (apiError: any) {
@@ -168,6 +262,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: "assistant",
           content: fallbackContent,
         });
+
+        verifyReferences(fallbackContent);
 
         res.json({ userMessage, aiMessage });
       }
