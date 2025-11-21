@@ -16,9 +16,10 @@ function generateSessionToken(): string {
 }
 
 function requireAuth(req: Request, res: Response, next: NextFunction) {
-  const authToken = req.headers.authorization?.replace("Bearer ", "") || 
-                    req.body?.authToken || 
-                    req.query?.authToken as string;
+  const authToken =
+    req.headers.authorization?.replace("Bearer ", "") ||
+    req.body?.authToken ||
+    (req.query?.authToken as string);
 
   if (!authToken || !authenticatedSessions.has(authToken)) {
     res.status(401).json({ error: "Unauthorized" });
@@ -99,10 +100,7 @@ function verifyReferences(content: string): void {
     .filter((hostname): hostname is string => Boolean(hostname))
     .filter((hostname) => {
       return !ALLOWED_REFERENCE_DOMAINS.some((domain) => {
-        return (
-          hostname === domain ||
-          hostname.endsWith(`.${domain}`)
-        );
+        return hostname === domain || hostname.endsWith(`.${domain}`);
       });
     });
 
@@ -110,8 +108,8 @@ function verifyReferences(content: string): void {
     const uniqueInvalidHosts = Array.from(new Set(invalidHosts));
     console.warn(
       `[ReferenceCheck] Unauthorized reference hosts detected: ${uniqueInvalidHosts.join(
-        ", ",
-      )}`,
+        ", "
+      )}`
     );
   }
 }
@@ -144,30 +142,35 @@ function logUsageAndCost(response: any): void {
 
   const outputItems = Array.isArray(response.output) ? response.output : [];
   const webSearchCalls = outputItems.filter(
-    (item: any) => item?.type === "web_search_call",
+    (item: any) => item?.type === "web_search_call"
   ).length;
   const toolCost = webSearchCalls * TOKEN_PRICING.WEB_SEARCH_CALL;
 
   const totalCost = inputCost + cachedCost + outputCost + toolCost;
 
   console.log(
-    `[OpenAI Usage] input=${inputTokens} (cached=${cachedTokens}) output=${outputTokens} total=${usage.total_tokens}`,
+    `[OpenAI Usage] input=${inputTokens} (cached=${cachedTokens}) output=${outputTokens} total=${usage.total_tokens}`
   );
 
   console.log(
     `[OpenAI Cost] input=$${inputCost.toFixed(6)} cached=$${cachedCost.toFixed(
-      6,
+      6
     )} output=$${outputCost.toFixed(6)} tools=$${toolCost.toFixed(
-      6,
-    )} (web_search_calls=${webSearchCalls}) total=$${totalCost.toFixed(6)}`,
+      6
+    )} (web_search_calls=${webSearchCalls}) total=$${totalCost.toFixed(6)}`
   );
 }
 
-async function dummyFunction(
-  message: string,
-  sessionId: string,
-): Promise<void> {
-  console.log(`[Dummy Function] Message: ${message}, SessionId: ${sessionId}`);
+function getCurrentTimeInRomanian(): string {
+  const now = new Date();
+  return now.toLocaleTimeString("ro-RO", {
+    month: "numeric",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -199,7 +202,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { content, sessionId } = insertMessageSchema.parse(req.body);
 
-      await dummyFunction(content, sessionId);
+      console.log(
+        `[Conversation Logger] User Message ${getCurrentTimeInRomanian()}: ${content}, SessionId: ${sessionId}`
+      );
 
       const userMessage = await storage.createMessage({
         sessionId,
@@ -242,6 +247,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const aiContent =
           response.output_text ||
           "Imi pare rau, nu am putut raspunde la intrebarea ta.";
+
+        console.log(
+          `[Conversation Logger] AI Message ${getCurrentTimeInRomanian()}: ${aiContent}, SessionId: ${sessionId}`
+        );
 
         const aiMessage = await storage.createMessage({
           sessionId,
