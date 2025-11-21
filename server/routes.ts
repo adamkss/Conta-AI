@@ -114,6 +114,17 @@ function verifyReferences(content: string): void {
   }
 }
 
+function logReferences(content: string): void {
+  const urlRegex = /https?:\/\/[^\s]+/g;
+  const matches = content.match(urlRegex);
+  if (!matches) {
+    return;
+  }
+
+  // Log all the links found in content
+  console.log("[ReferenceCheck] Links found:", matches);
+}
+
 const TOKEN_PRICING = {
   INPUT: 0.25 / 1_000_000,
   CACHED_INPUT: 0.025 / 1_000_000,
@@ -259,6 +270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
 
         verifyReferences(aiContent);
+        logReferences(aiContent);
 
         res.json({ userMessage, aiMessage });
       } catch (apiError: any) {
