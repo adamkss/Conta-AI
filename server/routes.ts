@@ -63,15 +63,16 @@ Răspunzi exclusiv în limba română.
 La finalul fiecărui răspuns, incluzi o listă simplă de referințe, fără formatare Markdown, doar în acest format:
 
 https://site.ro
-
 https://site2.ro
+
+Intotdeanua sa pui referintele direct la final, fara sa pui nume de sectiune sau capitol cum ar fi "Referinte:" sau "Referintele sunt:" sau "Referinţe finale:" similar. Niciodata! Doar sa pui direct referintele.
+
+Niciodata nu pui referinte in prima parte a raspunsului, doar la final, cum am specificat mai sus.
+Deci practic prima parte este raspunsul, fara referinte. Iar la final o lista simpla cu referinte.
 
 Nu explici niciodată ce este o întrebare follow-up și nu sugerezi alte acțiuni suplimentare.
 
 Nu oferi opinii, interpretări personale sau recomandări care nu sunt strict tehnice, fiscale sau contabile.
-Răspunsului trebuie să fie întotdeauna in ordinea aceasta:
-1. Răspuns
-2. Lista de referințe
 `;
 
 const ALLOWED_REFERENCE_DOMAINS = [
@@ -123,6 +124,40 @@ function logReferences(content: string): void {
 
   // Log all the links found in content
   console.log("[ReferenceCheck] Links found:", matches);
+}
+
+function clearReferences(content: string): string {
+  // Matches normal URLs, bare Markdown links, and Markdown links with parens "(...)"
+  // Examples matched and removed:
+  //   - https://site.ro
+  //   - [static.anaf.ro](https://site.ro)
+  //   - ([static.anaf.ro](https://site.ro))
+  const urlRegex =
+    /(\(\[.*?\]\(https?:\/\/[^\s)]+\)\))|(\[.*?\]\(https?:\/\/[^\s)]+\))|(https?:\/\/[^\s]+)/g;
+  // Remove URLs
+  let result = content.replace(urlRegex, "");
+  // Split by lines and trim end whitespace
+  let lines = result.split("\n");
+
+  // Remove only if the last non-empty line left matches "Referinte" or "Referinţe" (with or without colon or other text after)
+  while (lines.length > 0 && lines[lines.length - 1].trim() === "") {
+    lines.pop();
+  }
+
+  if (
+    lines.length > 0 &&
+    /referin(t|ţ|ț)e\s*:?.*/i.test(
+      lines[lines.length - 1]
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+    )
+  ) {
+    lines.pop();
+  }
+
+  // Join lines and remove trailing whitespace/newlines at very end
+  return lines.join("\n").replace(/[\s\r\n]+$/, "");
 }
 
 const TOKEN_PRICING = {
@@ -263,14 +298,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `[Conversation Logger] AI Message ${getCurrentTimeInRomanian()}: ${aiContent}, SessionId: ${sessionId}`
         );
 
+        verifyReferences(aiContent);
+        logReferences(aiContent);
+
         const aiMessage = await storage.createMessage({
           sessionId,
           role: "assistant",
-          content: aiContent,
+          content: clearReferences(aiContent),
         });
-
-        verifyReferences(aiContent);
-        logReferences(aiContent);
 
         res.json({ userMessage, aiMessage });
       } catch (apiError: any) {
