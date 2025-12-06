@@ -1,0 +1,202 @@
+[
+  {
+    "questionId": "cass_2026",
+    "runIndex": 0,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cass_2026",
+    "runIndex": 1,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cass_2026",
+    "runIndex": 2,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cass_2026",
+    "runIndex": 3,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cass_2026",
+    "runIndex": 4,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "capital_social_srl_2026",
+    "runIndex": 0,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "capital_social_srl_2026",
+    "runIndex": 1,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "capital_social_srl_2026",
+    "runIndex": 2,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "capital_social_srl_2026",
+    "runIndex": 3,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "capital_social_srl_2026",
+    "runIndex": 4,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "amenda_390",
+    "runIndex": 0,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "amenda_390",
+    "runIndex": 1,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "amenda_390",
+    "runIndex": 2,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "amenda_390",
+    "runIndex": 3,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "amenda_390",
+    "runIndex": 4,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_conta",
+    "runIndex": 0,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_conta",
+    "runIndex": 1,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_conta",
+    "runIndex": 2,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_conta",
+    "runIndex": 3,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_conta",
+    "runIndex": 4,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_psiho",
+    "runIndex": 0,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_psiho",
+    "runIndex": 1,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_psiho",
+    "runIndex": 2,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_psiho",
+    "runIndex": 3,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  },
+  {
+    "questionId": "cod_caen_psiho",
+    "runIndex": 4,
+    "score": 0,
+    "reason": "400 Invalid type for 'text.format': expected a text format, but got a string instead.",
+    "actualOutput": "",
+    "error": "400 Invalid type for 'text.format': expected a text format, but got a string instead."
+  }
+]
